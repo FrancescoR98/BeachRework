@@ -4,6 +4,16 @@ const currentDate = new Date().toISOString().split("T")[0];
 let currentEl = null;
 const TOT_LETTINI = 70;
 const DEFAULT_PRICE = 5;
+ codex/add-booking-menu-for-loungers-4h4yap
+function prezzoOmbrellone(lettini = 0) {
+  return DEFAULT_PRICE * (1 + Number(lettini));
+}
+
+function prezzoLettini(qty = 0) {
+  return DEFAULT_PRICE * Number(qty);
+}
+
+ main
 let prenotazioniExtra = [];
 let prenotatiElementi = 0;
 let prenotatiExtra = 0;
@@ -56,7 +66,10 @@ const hotspotContainer = document.getElementById("hotspots");
       el.stato = "libero";
       el.nome = "";
       el.lettini = 0;
+ codex/add-booking-menu-for-loungers-4h4yap
+      el.prezzo = prezzoOmbrellone();
       el.prezzo = DEFAULT_PRICE;
+ main
     });
 
     fetch(`dati/${data}.json`, { cache: "no-store" })
@@ -71,11 +84,16 @@ const hotspotContainer = document.getElementById("hotspots");
           el.stato = d.stato;
           el.nome = d.nome;
           el.lettini = d.lettini || 0;
+ codex/add-booking-menu-for-loungers-4h4yap
+          el.prezzo = (d.prezzo !== undefined)
+            ? d.prezzo
+            : prezzoOmbrellone(d.lettini || 0);
         codex/add-booking-menu-for-loungers-udr933
           el.prezzo = (d.prezzo !== undefined) ? d.prezzo : DEFAULT_PRICE * (1 + (d.lettini || 0));
 
           el.prezzo = d.prezzo || DEFAULT_PRICE;
       main
+ main
         }
       });
     })
@@ -136,7 +154,12 @@ const hotspotContainer = document.getElementById("hotspots");
         div.dataset.stato = el.stato;
         div.dataset.nome = el.nome || "";
         div.dataset.lettini = el.lettini || 0;
+ codex/add-booking-menu-for-loungers-4h4yap
+        div.dataset.prezzo = (el.prezzo !== undefined)
+          ? el.prezzo
+          : prezzoOmbrellone(el.lettini || 0);
         div.dataset.prezzo = el.prezzo || DEFAULT_PRICE;
+ main
 
         div.onclick = function () {
           currentEl = this;
@@ -148,7 +171,13 @@ const hotspotContainer = document.getElementById("hotspots");
           document.getElementById("select-stato").value = this.dataset.stato;
           document.getElementById("input-nome").value = this.dataset.nome || "";
           document.getElementById("select-lettini").value = this.dataset.lettini || 0;
+ codex/add-booking-menu-for-loungers-4h4yap
+          const numL = parseInt(this.dataset.lettini || "0", 10);
+          document.getElementById("input-prezzo").value = (this.dataset.prezzo !== undefined)
+            ? this.dataset.prezzo
+            : prezzoOmbrellone(numL);
           document.getElementById("input-prezzo").value = this.dataset.prezzo || DEFAULT_PRICE;
+ main
         };
 
         hotspotContainer.appendChild(div);
@@ -188,11 +217,17 @@ function updateDisponibilita() {
         document.getElementById("lettini-data-fine").value = p.al || dataSelezionata;
         document.getElementById("lettini-stato").value = p.stato || "libero";
         document.getElementById("lettini-quantita").value = p.lettini;
+ codex/add-booking-menu-for-loungers-4h4yap
+        document.getElementById("lettini-prezzo").value = (p.prezzo !== undefined)
+          ? p.prezzo
+          : prezzoLettini(p.lettini);
+
         codex/add-booking-menu-for-loungers-udr933
         document.getElementById("lettini-prezzo").value = p.prezzo || (DEFAULT_PRICE * p.lettini);
 
         document.getElementById("lettini-prezzo").value = p.prezzo || DEFAULT_PRICE;
        main
+ main
         document.getElementById("popup-lettini").style.display = "flex";
       };
       tbody.appendChild(tr);
@@ -207,18 +242,27 @@ function updateDisponibilita() {
       .then(r => r.ok ? r.json() : [])
       .then(arr => {
         prenotazioniExtra = arr
+ codex/add-booking-menu-for-loungers-4h4yap
+          .map(p => ({
+            nome: p.nome || "",
+            lettini: p.lettini || 0,
+            prezzo: (p.prezzo !== undefined) ? p.prezzo : prezzoLettini(p.lettini || 0),
+
           codex/add-booking-menu-for-loungers-udr933
           .map(p => ({
             nome: p.nome || "",
             lettini: p.lettini || 0,
             prezzo: (p.prezzo !== undefined) ? p.prezzo : DEFAULT_PRICE * (p.lettini || 0),
+ main
             stato: p.stato || "libero",
             dal: p.dal || data,
             al: p.al || data
           }))
+ codex/add-booking-menu-for-loungers-4h4yap
 
           .map(p => ({ ...p, prezzo: p.prezzo || DEFAULT_PRICE }))
        main
+ main
           .filter(p => Number(p.lettini) > 0);
       })
       .catch(() => { prenotazioniExtra = []; })
@@ -231,7 +275,12 @@ function salvaPrenotazione(dataInizio, dataFine) {
   const nome = document.getElementById("input-nome").value;
   const stato = document.getElementById("select-stato").value;
   const lettini = parseInt(document.getElementById("select-lettini").value, 10);
+ codex/add-booking-menu-for-loungers-4h4yap
+  const prezzoInput = parseFloat(document.getElementById("input-prezzo").value);
+  const prezzo = isNaN(prezzoInput) ? prezzoOmbrellone(lettini) : prezzoInput;
+
   const prezzo = parseFloat(document.getElementById("input-prezzo").value) || DEFAULT_PRICE;
+ main
 
   const inizio = new Date(dataInizio);
   const fine = new Date(dataFine);
@@ -251,7 +300,7 @@ function salvaPrenotazione(dataInizio, dataFine) {
   }
 
   const richieste = Object.entries(aggiornamenti).map(([data, aggiornamenti]) =>
-    fetch(`/dati/${data}.json`, {
+    fetch(`dati/${data}.json`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(aggiornamenti)
@@ -289,7 +338,10 @@ btnNuovoLettino.onclick = () => {
   document.getElementById("lettini-data-fine").value = dataSelezionata;
   document.getElementById("lettini-stato").value = "libero";
   document.getElementById("lettini-quantita").value = "1";
+ codex/add-booking-menu-for-loungers-4h4yap
+  document.getElementById("lettini-prezzo").value = prezzoLettini(1);
   document.getElementById("lettini-prezzo").value = DEFAULT_PRICE;
+ main
   document.getElementById("popup-lettini").style.display = "flex";
 };
 
@@ -304,10 +356,15 @@ document.getElementById("btn-salva-lettini").onclick = () => {
   const al = document.getElementById("lettini-data-fine").value;
   const stato = document.getElementById("lettini-stato").value;
   const num = parseInt(document.getElementById("lettini-quantita").value, 10);
+ codex/add-booking-menu-for-loungers-4h4yap
+  const prezzoInput = parseFloat(document.getElementById("lettini-prezzo").value);
+  const prezzo = isNaN(prezzoInput) ? prezzoLettini(num) : prezzoInput;
+
  codex/add-booking-menu-for-loungers-udr933
   const prezzo = parseFloat(document.getElementById("lettini-prezzo").value) || DEFAULT_PRICE * num;
 
   const prezzo = parseFloat(document.getElementById("lettini-prezzo").value) || DEFAULT_PRICE;
+ main
  main
   const data = document.getElementById("datePicker").value;
 
@@ -317,6 +374,13 @@ document.getElementById("btn-salva-lettini").onclick = () => {
     if (num === 0) {
       prenotazioniExtra.splice(editingIndex, 1);
     } else {
+ codex/add-booking-menu-for-loungers-4h4yap
+      prenotazioniExtra[editingIndex] = entry;
+    }
+  } else {
+    if (num > 0) {
+      prenotazioniExtra.push(entry);
+
         codex/add-booking-menu-for-loungers-udr933
       prenotazioniExtra[editingIndex] = entry;
     }
@@ -330,13 +394,14 @@ document.getElementById("btn-salva-lettini").onclick = () => {
     if (num > 0) {
       prenotazioniExtra.push({ nome, lettini: num, prezzo });
  main
+ main
     }
   }
 
   prenotazioniExtra = prenotazioniExtra.filter(p => Number(p.lettini) > 0);
   renderLettiniTable();
 
-  fetch(`/lettini/${data}.json`, {
+  fetch(`lettini/${data}.json`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(prenotazioniExtra)
@@ -349,12 +414,20 @@ document.getElementById("btn-salva-lettini").onclick = () => {
 
 document.getElementById("select-lettini").addEventListener("change", function () {
   const num = parseInt(this.value, 10);
+ codex/add-booking-menu-for-loungers-4h4yap
+  document.getElementById("input-prezzo").value = prezzoOmbrellone(num);
+
   document.getElementById("input-prezzo").value = DEFAULT_PRICE * (1 + num);
+ main
 });
 
 document.getElementById("lettini-quantita").addEventListener("change", function () {
   const num = parseInt(this.value, 10);
+ codex/add-booking-menu-for-loungers-4h4yap
+  document.getElementById("lettini-prezzo").value = prezzoLettini(num);
+
   document.getElementById("lettini-prezzo").value = DEFAULT_PRICE * num;
+ main
 });
 
 // Cambio data

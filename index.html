@@ -118,7 +118,7 @@
       background: white;
       padding: 2rem;
       border-radius: 10px;
-      width: 300px;
+      width: 500px;
       max-width: 90%;
       display: flex;
       flex-direction: column;
@@ -135,6 +135,13 @@
       font-size: 1rem;
       border: 1px solid #ccc;
       border-radius: 5px;
+    }
+
+    .modal-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
     }
 
     .btn-group {
@@ -269,6 +276,43 @@
   <div id="popup" class="modal">
     <div class="modal-content">
       <h2>Modifica Prenotazione</h2>
+        codex/add-booking-menu-for-loungers-4h4yap
+      <div class="modal-row">
+        <label>Nome cliente:</label>
+        <input type="text" id="input-nome">
+      </div>
+      <div class="modal-row">
+        <label for="data-inizio">Dal:</label>
+        <input type="date" id="data-inizio">
+        <label for="data-fine">Al:</label>
+        <input type="date" id="data-fine">
+      </div>
+      <div class="modal-row">
+        <label>Stato:</label>
+        <select id="select-stato">
+          <option value="libero">Libero</option>
+          <option value="occupato">Occupato</option>
+          <option value="pagato">Pagato</option>
+        </select>
+        <label>Lettini:</label>
+        <select id="select-lettini">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+      <div class="modal-row">
+        <label>Prezzo (€):</label>
+        <input type="number" id="input-prezzo" min="0" step="0.01">
+      </div>
       <label>Nome cliente:</label>
       <input type="text" id="input-nome">
       <label for="data-inizio">Dal:</label>
@@ -299,6 +343,7 @@
       </select>
       <label>Prezzo (€):</label>
       <input type="number" id="input-prezzo" value="5" min="0" step="0.01">
+        main
       <div class="btn-group">
         <button id="btn-salva">Salva</button>
         <button id="popup-close">Chiudi</button>
@@ -309,6 +354,43 @@
   <div id="popup-lettini" class="modal">
     <div class="modal-content">
       <h2>Modifica Prenotazione Lettini</h2>
+        codex/add-booking-menu-for-loungers-4h4yap
+      <div class="modal-row">
+        <label>Nome cliente:</label>
+        <input type="text" id="lettini-nome">
+      </div>
+      <div class="modal-row">
+        <label for="lettini-data-inizio">Dal:</label>
+        <input type="date" id="lettini-data-inizio">
+        <label for="lettini-data-fine">Al:</label>
+        <input type="date" id="lettini-data-fine">
+      </div>
+      <div class="modal-row">
+        <label>Stato:</label>
+        <select id="lettini-stato">
+          <option value="libero">Libero</option>
+          <option value="occupato">Occupato</option>
+          <option value="pagato">Pagato</option>
+        </select>
+        <label>Lettini:</label>
+        <select id="lettini-quantita">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+      <div class="modal-row">
+        <label>Prezzo (€):</label>
+        <input type="number" id="lettini-prezzo" min="0" step="0.01">
+      </div>
       <label>Nome cliente:</label>
       <input type="text" id="lettini-nome">
       <label for="lettini-data-inizio">Dal:</label>
@@ -339,6 +421,7 @@
       </select>
       <label>Prezzo (€):</label>
       <input type="number" id="lettini-prezzo" value="5" min="0" step="0.01">
+        main
       <div class="btn-group">
         <button id="btn-salva-lettini">Salva</button>
         <button id="lettini-popup-close">Chiudi</button>
