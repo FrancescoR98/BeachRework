@@ -71,7 +71,11 @@ const hotspotContainer = document.getElementById("hotspots");
           el.stato = d.stato;
           el.nome = d.nome;
           el.lettini = d.lettini || 0;
+        codex/add-booking-menu-for-loungers-udr933
+          el.prezzo = (d.prezzo !== undefined) ? d.prezzo : DEFAULT_PRICE * (1 + (d.lettini || 0));
+
           el.prezzo = d.prezzo || DEFAULT_PRICE;
+      main
         }
       });
     })
@@ -178,9 +182,17 @@ function updateDisponibilita() {
       tr.appendChild(tdL);
       tr.onclick = () => {
         editingIndex = idx;
+        const dataSelezionata = document.getElementById("datePicker").value;
         document.getElementById("lettini-nome").value = p.nome;
+        document.getElementById("lettini-data-inizio").value = p.dal || dataSelezionata;
+        document.getElementById("lettini-data-fine").value = p.al || dataSelezionata;
+        document.getElementById("lettini-stato").value = p.stato || "libero";
         document.getElementById("lettini-quantita").value = p.lettini;
+        codex/add-booking-menu-for-loungers-udr933
+        document.getElementById("lettini-prezzo").value = p.prezzo || (DEFAULT_PRICE * p.lettini);
+
         document.getElementById("lettini-prezzo").value = p.prezzo || DEFAULT_PRICE;
+       main
         document.getElementById("popup-lettini").style.display = "flex";
       };
       tbody.appendChild(tr);
@@ -195,7 +207,18 @@ function updateDisponibilita() {
       .then(r => r.ok ? r.json() : [])
       .then(arr => {
         prenotazioniExtra = arr
+          codex/add-booking-menu-for-loungers-udr933
+          .map(p => ({
+            nome: p.nome || "",
+            lettini: p.lettini || 0,
+            prezzo: (p.prezzo !== undefined) ? p.prezzo : DEFAULT_PRICE * (p.lettini || 0),
+            stato: p.stato || "libero",
+            dal: p.dal || data,
+            al: p.al || data
+          }))
+
           .map(p => ({ ...p, prezzo: p.prezzo || DEFAULT_PRICE }))
+       main
           .filter(p => Number(p.lettini) > 0);
       })
       .catch(() => { prenotazioniExtra = []; })
@@ -260,7 +283,11 @@ document.getElementById("popup-close").onclick = () => {
 const btnNuovoLettino = document.getElementById("btn-nuovo-lettino");
 btnNuovoLettino.onclick = () => {
   editingIndex = null;
+  const dataSelezionata = document.getElementById("datePicker").value;
   document.getElementById("lettini-nome").value = "";
+  document.getElementById("lettini-data-inizio").value = dataSelezionata;
+  document.getElementById("lettini-data-fine").value = dataSelezionata;
+  document.getElementById("lettini-stato").value = "libero";
   document.getElementById("lettini-quantita").value = "1";
   document.getElementById("lettini-prezzo").value = DEFAULT_PRICE;
   document.getElementById("popup-lettini").style.display = "flex";
@@ -273,19 +300,36 @@ document.getElementById("lettini-popup-close").onclick = () => {
 
 document.getElementById("btn-salva-lettini").onclick = () => {
   const nome = document.getElementById("lettini-nome").value;
+  const dal = document.getElementById("lettini-data-inizio").value;
+  const al = document.getElementById("lettini-data-fine").value;
+  const stato = document.getElementById("lettini-stato").value;
   const num = parseInt(document.getElementById("lettini-quantita").value, 10);
+ codex/add-booking-menu-for-loungers-udr933
+  const prezzo = parseFloat(document.getElementById("lettini-prezzo").value) || DEFAULT_PRICE * num;
+
   const prezzo = parseFloat(document.getElementById("lettini-prezzo").value) || DEFAULT_PRICE;
+ main
   const data = document.getElementById("datePicker").value;
+
+  const entry = { nome, lettini: num, prezzo, stato, dal, al };
 
   if (editingIndex !== null) {
     if (num === 0) {
       prenotazioniExtra.splice(editingIndex, 1);
     } else {
+        codex/add-booking-menu-for-loungers-udr933
+      prenotazioniExtra[editingIndex] = entry;
+    }
+  } else {
+    if (num > 0) {
+      prenotazioniExtra.push(entry);
+
       prenotazioniExtra[editingIndex] = { nome, lettini: num, prezzo };
     }
   } else {
     if (num > 0) {
       prenotazioniExtra.push({ nome, lettini: num, prezzo });
+ main
     }
   }
 
@@ -302,6 +346,16 @@ document.getElementById("btn-salva-lettini").onclick = () => {
     editingIndex = null;
   });
 };
+
+document.getElementById("select-lettini").addEventListener("change", function () {
+  const num = parseInt(this.value, 10);
+  document.getElementById("input-prezzo").value = DEFAULT_PRICE * (1 + num);
+});
+
+document.getElementById("lettini-quantita").addEventListener("change", function () {
+  const num = parseInt(this.value, 10);
+  document.getElementById("lettini-prezzo").value = DEFAULT_PRICE * num;
+});
 
 // Cambio data
   document.getElementById("datePicker").addEventListener("change", function () {

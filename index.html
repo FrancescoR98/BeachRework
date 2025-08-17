@@ -308,9 +308,21 @@
 
   <div id="popup-lettini" class="modal">
     <div class="modal-content">
-      <h2>Prenota Lettini</h2>
+      <h2>Modifica Prenotazione Lettini</h2>
       <label>Nome cliente:</label>
       <input type="text" id="lettini-nome">
+      <label for="lettini-data-inizio">Dal:</label>
+      <input type="date" id="lettini-data-inizio">
+
+      <label for="lettini-data-fine">Al:</label>
+      <input type="date" id="lettini-data-fine">
+
+      <label>Stato:</label>
+      <select id="lettini-stato">
+        <option value="libero">Libero</option>
+        <option value="occupato">Occupato</option>
+        <option value="pagato">Pagato</option>
+      </select>
       <label>Lettini:</label>
       <select id="lettini-quantita">
         <option value="0">0</option>
