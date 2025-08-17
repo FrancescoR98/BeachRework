@@ -3,6 +3,7 @@ const currentDate = new Date().toISOString().split("T")[0];
 
 let currentEl = null;
 const TOT_LETTINI = 70;
+const DEFAULT_PRICE = 5;
 let prenotazioniExtra = [];
 let prenotatiElementi = 0;
 let prenotatiExtra = 0;
@@ -55,6 +56,7 @@ const hotspotContainer = document.getElementById("hotspots");
       el.stato = "libero";
       el.nome = "";
       el.lettini = 0;
+      el.prezzo = DEFAULT_PRICE;
     });
 
     fetch(`dati/${data}.json`, { cache: "no-store" })
@@ -69,6 +71,7 @@ const hotspotContainer = document.getElementById("hotspots");
           el.stato = d.stato;
           el.nome = d.nome;
           el.lettini = d.lettini || 0;
+          el.prezzo = d.prezzo || DEFAULT_PRICE;
         }
       });
     })
@@ -129,6 +132,7 @@ const hotspotContainer = document.getElementById("hotspots");
         div.dataset.stato = el.stato;
         div.dataset.nome = el.nome || "";
         div.dataset.lettini = el.lettini || 0;
+        div.dataset.prezzo = el.prezzo || DEFAULT_PRICE;
 
         div.onclick = function () {
           currentEl = this;
@@ -140,6 +144,7 @@ const hotspotContainer = document.getElementById("hotspots");
           document.getElementById("select-stato").value = this.dataset.stato;
           document.getElementById("input-nome").value = this.dataset.nome || "";
           document.getElementById("select-lettini").value = this.dataset.lettini || 0;
+          document.getElementById("input-prezzo").value = this.dataset.prezzo || DEFAULT_PRICE;
         };
 
         hotspotContainer.appendChild(div);
@@ -175,6 +180,7 @@ function updateDisponibilita() {
         editingIndex = idx;
         document.getElementById("lettini-nome").value = p.nome;
         document.getElementById("lettini-quantita").value = p.lettini;
+        document.getElementById("lettini-prezzo").value = p.prezzo || DEFAULT_PRICE;
         document.getElementById("popup-lettini").style.display = "flex";
       };
       tbody.appendChild(tr);
@@ -188,7 +194,9 @@ function updateDisponibilita() {
     fetch(`lettini/${data}.json`, { cache: "no-store" })
       .then(r => r.ok ? r.json() : [])
       .then(arr => {
-        prenotazioniExtra = arr.filter(p => Number(p.lettini) > 0);
+        prenotazioniExtra = arr
+          .map(p => ({ ...p, prezzo: p.prezzo || DEFAULT_PRICE }))
+          .filter(p => Number(p.lettini) > 0);
       })
       .catch(() => { prenotazioniExtra = []; })
       .finally(() => {
@@ -200,6 +208,7 @@ function salvaPrenotazione(dataInizio, dataFine) {
   const nome = document.getElementById("input-nome").value;
   const stato = document.getElementById("select-stato").value;
   const lettini = parseInt(document.getElementById("select-lettini").value, 10);
+  const prezzo = parseFloat(document.getElementById("input-prezzo").value) || DEFAULT_PRICE;
 
   const inizio = new Date(dataInizio);
   const fine = new Date(dataFine);
@@ -213,7 +222,8 @@ function salvaPrenotazione(dataInizio, dataFine) {
       id: currentEl.id,
       stato,
       nome,
-      lettini
+      lettini,
+      prezzo
     });
   }
 
@@ -252,6 +262,7 @@ btnNuovoLettino.onclick = () => {
   editingIndex = null;
   document.getElementById("lettini-nome").value = "";
   document.getElementById("lettini-quantita").value = "1";
+  document.getElementById("lettini-prezzo").value = DEFAULT_PRICE;
   document.getElementById("popup-lettini").style.display = "flex";
 };
 
@@ -263,17 +274,18 @@ document.getElementById("lettini-popup-close").onclick = () => {
 document.getElementById("btn-salva-lettini").onclick = () => {
   const nome = document.getElementById("lettini-nome").value;
   const num = parseInt(document.getElementById("lettini-quantita").value, 10);
+  const prezzo = parseFloat(document.getElementById("lettini-prezzo").value) || DEFAULT_PRICE;
   const data = document.getElementById("datePicker").value;
 
   if (editingIndex !== null) {
     if (num === 0) {
       prenotazioniExtra.splice(editingIndex, 1);
     } else {
-      prenotazioniExtra[editingIndex] = { nome, lettini: num };
+      prenotazioniExtra[editingIndex] = { nome, lettini: num, prezzo };
     }
   } else {
     if (num > 0) {
-      prenotazioniExtra.push({ nome, lettini: num });
+      prenotazioniExtra.push({ nome, lettini: num, prezzo });
     }
   }
 
